@@ -32,7 +32,12 @@
     _view.frame = CGRectMake(0, 0, 768, 1024);
     self.view = _view;
     
-    _backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BackgroundTextureBlackGradientPad"]];
+    if (@available(iOS 13.0, *)) {
+        _view.backgroundColor = [UIColor systemGroupedBackgroundColor];
+        _backgroundView = [[UIImageView alloc] initWithFrame:_view.frame];
+    } else {
+        _backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BackgroundTextureBlackGradientPad"]];
+    }
     [_backgroundView setFrame:_view.frame];
     [_view addSubview:_backgroundView];
 
@@ -80,7 +85,11 @@
 - (void) viewWillAppear:(BOOL)animated {
     self.navigationItem.title = @"Mumble";
     
-    self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
+    if (@available(iOS 13.0, *)) {
+        // Use default bar style
+    } else {
+        self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
+    }
     
     UIBarButtonItem *aboutBtn = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"About", nil) style:UIBarButtonItemStylePlain target:self action:@selector(aboutButtonClicked:)];
     self.navigationItem.rightBarButtonItem = aboutBtn;

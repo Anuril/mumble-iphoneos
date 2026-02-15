@@ -10,4 +10,11 @@
 + (UIColor *) userCountColor;
 + (UIColor *) verifiedCertificateChainColor;
 + (UIColor *) backgroundViewiOS7Color;
++ (UIColor *) backgroundColor;
++ (UIColor *) secondaryBackgroundColor;
++ (UIColor *) groupedBackgroundColor;
++ (UIColor *) cellBackgroundColor;
++ (UIColor *) primaryTextColor;
++ (UIColor *) secondaryTextColor;
++ (UIColor *) tintColor;
 @end

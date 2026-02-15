@@ -43,14 +43,8 @@
 
     self.navigationItem.title = NSLocalizedString(@"Certificates", nil);
     
-    if (@available(iOS 7, *)) {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        self.tableView.separatorInset = UIEdgeInsetsZero;
-        
-        // Set the tint color of the table view to be the same color the ">" mark on each of the cells.
-        // This ensures that the DisclosureButton accessory view has the same color. It's not possible to change its
-        // color by setting the tint of the cell - but doing it via the table view's tint works, so we're doing that.
-        self.tableView.tintColor = [UIColor colorWithRed:0xc7/255.0f green:0xc7/255.0f blue:0xcc/255.0f alpha:1.0f];
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
     }
     
     [self fetchCertificates];

@@ -10,9 +10,11 @@
 #import "MUPreferencesViewController.h"
 #import "MUServerRootViewController.h"
 #import "MUNotificationController.h"
+#import "MUConnectionController.h"
 #import "MULegalViewController.h"
 #import "MUImage.h"
 #import "MUBackgroundView.h"
+#import "MUDatabase.h"
 
 @interface MUWelcomeScreenPhone () {
     NSInteger    _aboutWebsiteButton;
@@ -26,7 +28,12 @@
 @implementation MUWelcomeScreenPhone
 
 - (id) init {
-    if ((self = [super initWithStyle:UITableViewStyleGrouped])) {
+    if (@available(iOS 13.0, *)) {
+        self = [super initWithStyle:UITableViewStyleInsetGrouped];
+    } else {
+        self = [super initWithStyle:UITableViewStyleGrouped];
+    }
+    if (self) {
         // ...
     }
     return self;
@@ -37,16 +44,13 @@
 
     self.navigationItem.title = @"Mumble";
     self.navigationController.toolbarHidden = YES;
-
-    self.tableView.backgroundView = [MUBackgroundView backgroundView];
     
-    if (@available(iOS 7, *)) {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        self.tableView.separatorInset = UIEdgeInsetsZero;
-    } else {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    if (@available(iOS 11.0, *)) {
+        self.navigationController.navigationBar.prefersLargeTitles = YES;
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     }
 
+    self.tableView.backgroundView = [MUBackgroundView backgroundView];
     self.tableView.scrollEnabled = NO;
     
 #if MUMBLE_LAUNCH_IMAGE_CREATION != 1
@@ -77,7 +81,7 @@
     return 1;
 #endif
     if (section == 0)
-        return 3;
+        return 4;
     return 0;
 }
 
@@ -110,15 +114,35 @@
     }
     
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     
     /* Servers section. */
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            cell.textLabel.text = NSLocalizedString(@"Public Servers", nil);
+            cell.textLabel.text = NSLocalizedString(@"Join a Server", nil);
+            if (@available(iOS 13.0, *)) {
+                cell.imageView.image = [UIImage systemImageNamed:@"plus.circle.fill"];
+                cell.imageView.tintColor = [UIColor systemBlueColor];
+            }
+            cell.accessoryType = UITableViewCellAccessoryNone;
         } else if (indexPath.row == 1) {
-            cell.textLabel.text = NSLocalizedString(@"Favourite Servers", nil);
+            cell.textLabel.text = NSLocalizedString(@"Public Servers", nil);
+            if (@available(iOS 13.0, *)) {
+                cell.imageView.image = [UIImage systemImageNamed:@"globe"];
+                cell.imageView.tintColor = [UIColor systemIndigoColor];
+            }
         } else if (indexPath.row == 2) {
+            cell.textLabel.text = NSLocalizedString(@"Favourite Servers", nil);
+            if (@available(iOS 13.0, *)) {
+                cell.imageView.image = [UIImage systemImageNamed:@"star.fill"];
+                cell.imageView.tintColor = [UIColor systemYellowColor];
+            }
+        } else if (indexPath.row == 3) {
             cell.textLabel.text = NSLocalizedString(@"LAN Servers", nil);
+            if (@available(iOS 13.0, *)) {
+                cell.imageView.image = [UIImage systemImageNamed:@"wifi"];
+                cell.imageView.tintColor = [UIColor systemGreenColor];
+            }
         }
     }
 
@@ -132,15 +156,91 @@
     /* Servers section. */
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
+            [self showJoinServerDialog];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        } else if (indexPath.row == 1) {
             MUPublicServerListController *serverList = [[MUPublicServerListController alloc] init];
             [self.navigationController pushViewController:serverList animated:YES];
-        } else if (indexPath.row == 1) {
+        } else if (indexPath.row == 2) {
             MUFavouriteServerListController *favList = [[MUFavouriteServerListController alloc] init];
             [self.navigationController pushViewController:favList animated:YES];
-        } else if (indexPath.row == 2) {
+        } else if (indexPath.row == 3) {
             MULanServerListController *lanList = [[MULanServerListController alloc] init];
             [self.navigationController pushViewController:lanList animated:YES];
         }
+    }
+}
+
+- (void) showJoinServerDialog {
+    NSString *title = NSLocalizedString(@"Join a Server", nil);
+    NSString *msg = NSLocalizedString(@"Enter a server address or paste a mumble:// link", nil);
+    
+    UIAlertController *alertCtrl = [UIAlertController alertControllerWithTitle:title
+                                                                       message:msg
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertCtrl addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = NSLocalizedString(@"mumble.example.com or mumble://...", nil);
+        textField.keyboardType = UIKeyboardTypeURL;
+        textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        textField.autocorrectionType = UITextAutocorrectionTypeNo;
+    }];
+    
+    [alertCtrl addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = [[NSUserDefaults standardUserDefaults] objectForKey:@"DefaultUserName"];
+        textField.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"DefaultUserName"];
+    }];
+    
+    [alertCtrl addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
+                                                  style:UIAlertActionStyleCancel
+                                                handler:nil]];
+    
+    [alertCtrl addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Connect", nil)
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction * _Nonnull action) {
+        NSString *addressText = [[[alertCtrl textFields] objectAtIndex:0] text];
+        NSString *username = [[[alertCtrl textFields] objectAtIndex:1] text];
+        
+        if (!addressText || [addressText length] == 0) return;
+        if (!username || [username length] == 0) {
+            username = [[NSUserDefaults standardUserDefaults] objectForKey:@"DefaultUserName"];
+        }
+        
+        [self connectWithAddress:addressText username:username];
+    }]];
+    
+    [self presentViewController:alertCtrl animated:YES completion:nil];
+}
+
+- (void) connectWithAddress:(NSString *)addressText username:(NSString *)username {
+    NSString *hostname = nil;
+    NSInteger port = 64738;
+    NSString *password = nil;
+    
+    // Try parsing as mumble:// URL
+    if ([addressText hasPrefix:@"mumble://"]) {
+        NSURL *url = [NSURL URLWithString:addressText];
+        if (url) {
+            hostname = [url host];
+            if ([url port]) port = [[url port] integerValue];
+            if ([url user]) username = [url user];
+            if ([url password]) password = [url password];
+        }
+    }
+    
+    // Parse as host:port
+    if (!hostname) {
+        NSArray *parts = [addressText componentsSeparatedByString:@":"];
+        hostname = [parts firstObject];
+        if ([parts count] > 1) {
+            port = [[parts objectAtIndex:1] integerValue];
+            if (port == 0) port = 64738;
+        }
+    }
+    
+    if (hostname && [hostname length] > 0) {
+        MUConnectionController *connCtrlr = [MUConnectionController sharedController];
+        [connCtrlr connetToHostname:hostname port:port withUsername:username andPassword:password withParentViewController:self];
     }
 }
 

@@ -176,6 +176,7 @@
 		28FAA35F14D74C1600F6D711 /* SmallMumbleIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 28FAA35D14D74C1600F6D711 /* SmallMumbleIcon.png */; };
 		28FAA36014D74C1600F6D711 /* SmallMumbleIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 28FAA35E14D74C1600F6D711 /* SmallMumbleIcon@2x.png */; };
 		28FAA36414D7551600F6D711 /* MKNumberBadgeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 28FAA36314D7551600F6D711 /* MKNumberBadgeView.m */; };
+		831535552F41D1E000AB1C89 /* MUOnboardingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 831535542F41D1E000AB1C89 /* MUOnboardingViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -512,6 +513,8 @@
 		28FAA36314D7551600F6D711 /* MKNumberBadgeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MKNumberBadgeView.m; path = Dependencies/MKNumberBadgeView/MKNumberBadgeView.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Source/main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* Mumble.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mumble.pch; path = Source/Mumble.pch; sourceTree = "<group>"; };
+		831535532F41D1E000AB1C89 /* MUOnboardingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MUOnboardingViewController.h; sourceTree = "<group>"; };
+		831535542F41D1E000AB1C89 /* MUOnboardingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MUOnboardingViewController.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Source/Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -541,6 +544,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				831535532F41D1E000AB1C89 /* MUOnboardingViewController.h */,
+				831535542F41D1E000AB1C89 /* MUOnboardingViewController.m */,
 				2872F7C4124668880078C0B1 /* Certificates */,
 				28BF8E1C11D93A1900B72770 /* Database */,
 				2838EA0C1293165700035C5D /* Preferences */,
@@ -1252,6 +1257,7 @@
 				2861C281116BE905002B8514 /* MUWelcomeScreenPhone.m in Sources */,
 				287BA29011B96C960010E031 /* MUDatabase.m in Sources */,
 				287BA33B11B97C470010E031 /* MUFavouriteServer.m in Sources */,
+				831535552F41D1E000AB1C89 /* MUOnboardingViewController.m in Sources */,
 				287BA34011B97EEE0010E031 /* MUFavouriteServerListController.m in Sources */,
 				287BA3A611B996D90010E031 /* MUFavouriteServerEditViewController.m in Sources */,
 				28C6EF0A11BBF38100E426C8 /* MUCountryServerListController.m in Sources */,
@@ -1364,6 +1370,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5HHMM9U6SJ;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1374,6 +1381,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5HHMM9U6SJ;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1521,6 +1529,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5HHMM9U6SJ;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -1541,6 +1550,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 5HHMM9U6SJ;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};

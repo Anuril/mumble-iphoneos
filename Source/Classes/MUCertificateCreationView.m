@@ -116,13 +116,6 @@ static void ShowAlertDialog(NSString *title, NSString *msg) {
     
     self.tableView.backgroundView = [MUBackgroundView backgroundView];
     
-    if (@available(iOS 7, *)) {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        self.tableView.separatorInset = UIEdgeInsetsZero;
-    } else {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    }
-    
     NSString *create = NSLocalizedString(@"Create", @"'Create' text for certificate creation");
     NSString *cancel = NSLocalizedString(@"Cancel", nil);
 

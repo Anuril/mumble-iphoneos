@@ -30,7 +30,13 @@
 #pragma mark Initialization
 
 - (id) init {
-    if ((self = [super initWithStyle:UITableViewStyleGrouped])) {
+    UITableViewStyle style;
+    if (@available(iOS 13.0, *)) {
+        style = UITableViewStyleInsetGrouped;
+    } else {
+        style = UITableViewStyleGrouped;
+    }
+    if ((self = [super initWithStyle:style])) {
         self.preferredContentSize = CGSizeMake(320, 480);
     }
     return self;
@@ -48,20 +54,11 @@
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.navigationController.navigationBar.barStyle = UIBarStyleBlackOpaque;
-        [self.navigationController.navigationBar setBackgroundImage:[MUImage clearColorImage] forBarMetrics:UIBarMetricsDefault];
-        self.navigationController.navigationBar.translucent = YES;
+    if (@available(iOS 11.0, *)) {
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
     }
     
     self.tableView.backgroundView = [MUBackgroundView backgroundView];
-    
-    if (@available(iOS 7, *)) {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        self.tableView.separatorInset = UIEdgeInsetsZero;
-    } else {
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWasShown:)
@@ -117,7 +114,7 @@
         // Volume
         if ([indexPath row] == 0) {
             UISlider *volSlider = [[UISlider alloc] init];
-            [volSlider setMinimumTrackTintColor:[UIColor blackColor]];
+            [volSlider setMinimumTrackTintColor:[UIColor systemBlueColor]];
             [volSlider setMaximumValue:1.0f];
             [volSlider setMinimumValue:0.0f];
             [volSlider setValue:[[NSUserDefaults standardUserDefaults] floatForKey:@"AudioOutputVolume"]];
@@ -158,7 +155,7 @@
             [[cell textLabel] setText:NSLocalizedString(@"Force TCP", nil)];
             [cell setAccessoryView:tcpSwitch];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            [tcpSwitch setOnTintColor:[UIColor blackColor]];
+            [tcpSwitch setOnTintColor:[UIColor systemBlueColor]];
             [tcpSwitch addTarget:self action:@selector(forceTCPChanged:) forControlEvents:UIControlEventValueChanged];
         } else if ([indexPath row] == 1) {
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"PrefCertificateCell"];
@@ -204,6 +201,13 @@
 
 - (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return [MUTableViewHeaderLabel defaultHeaderHeight];
+}
+
+- (NSString *) tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+    if (section == 1) {
+        return NSLocalizedString(@"Certificates identify you to servers. Without one, some servers won't let you register your username.", nil);
+    }
+    return nil;
 }
 
 #pragma mark -

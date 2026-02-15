@@ -6,6 +6,7 @@
 
 #import "MUWelcomeScreenPhone.h"
 #import "MUWelcomeScreenPad.h"
+#import "MUOnboardingViewController.h"
 #import "MUDatabase.h"
 #import "MUPublicServerList.h"
 #import "MUConnectionController.h"
@@ -95,11 +96,19 @@
     //    _window.tintColor = [UIColor whiteColor];
     }
 
-    UINavigationBar.appearance.tintColor = [UIColor whiteColor];
-    UINavigationBar.appearance.translucent = NO;
-    UINavigationBar.appearance.barTintColor = [UIColor blackColor];
-    UINavigationBar.appearance.backgroundColor = [UIColor blackColor];
-    UINavigationBar.appearance.barStyle = UIBarStyleBlack;
+    if (@available(iOS 13.0, *)) {
+        UINavigationBarAppearance *navAppearance = [[UINavigationBarAppearance alloc] init];
+        [navAppearance configureWithDefaultBackground];
+        UINavigationBar.appearance.standardAppearance = navAppearance;
+        UINavigationBar.appearance.scrollEdgeAppearance = navAppearance;
+        UINavigationBar.appearance.tintColor = [UIColor systemBlueColor];
+    } else {
+        UINavigationBar.appearance.tintColor = [UIColor whiteColor];
+        UINavigationBar.appearance.translucent = NO;
+        UINavigationBar.appearance.barTintColor = [UIColor blackColor];
+        UINavigationBar.appearance.backgroundColor = [UIColor blackColor];
+        UINavigationBar.appearance.barStyle = UIBarStyleBlack;
+    }
     
     // Put a background view in here, to have prettier transitions.
     [_window addSubview:[MUBackgroundView backgroundView]];
@@ -112,14 +121,24 @@
     UIViewController *welcomeScreen = nil;
     if (idiom == UIUserInterfaceIdiomPad) {
         welcomeScreen = [[MUWelcomeScreenPad alloc] init];
-        [_navigationController pushViewController:welcomeScreen animated:YES];
     } else {
         welcomeScreen = [[MUWelcomeScreenPhone alloc] init];
-        [_navigationController pushViewController:welcomeScreen animated:YES];
     }
+    [_navigationController pushViewController:welcomeScreen animated:NO];
     
     [_window setRootViewController:_navigationController];
     [_window makeKeyAndVisible];
+
+    // Show onboarding on first launch
+    BOOL hasCompletedOnboarding = [[NSUserDefaults standardUserDefaults] boolForKey:@"HasCompletedOnboarding"];
+    if (!hasCompletedOnboarding) {
+        MUOnboardingViewController *onboarding = [[MUOnboardingViewController alloc] init];
+        onboarding.modalPresentationStyle = UIModalPresentationFullScreen;
+        onboarding.completionHandler = ^{
+            [_navigationController dismissViewControllerAnimated:YES completion:nil];
+        };
+        [_navigationController presentViewController:onboarding animated:NO completion:nil];
+    }
 
     NSURL *url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     if ([[url scheme] isEqualToString:@"mumble"]) {
