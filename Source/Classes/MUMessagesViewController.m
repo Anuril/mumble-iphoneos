@@ -555,7 +555,8 @@
     }
 
     UIApplication *app = [UIApplication sharedApplication];
-    if ([app applicationState] == UIApplicationStateBackground) {
+    if ([app applicationState] == UIApplicationStateBackground
+        && [[NSUserDefaults standardUserDefaults] boolForKey:@"NotificationsEnabled"]) {
         NSMutableCharacterSet *trimSet = [[NSMutableCharacterSet alloc] init];
         [trimSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
         [trimSet formUnionWithCharacterSet:[NSCharacterSet newlineCharacterSet]];
@@ -583,8 +584,14 @@
         UNNotificationRequest *notificationReq = [UNNotificationRequest requestWithIdentifier:@"info.mumble.Mumble.TextMessageNotification"
                                                                                      content:content
                                                                                      trigger:nil];
-        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:notificationReq withCompletionHandler:nil];
-        [app setApplicationIconBadgeNumber:[app applicationIconBadgeNumber]+1];
+        [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+            if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:notificationReq withCompletionHandler:nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [app setApplicationIconBadgeNumber:[app applicationIconBadgeNumber]+1];
+                });
+            }
+        }];
     }
 }
 

@@ -10,6 +10,7 @@
 #import "MUTableViewHeaderLabel.h"
 #import "MUConnectionController.h"
 #import "MUServerCell.h"
+#import "MUColor.h"
 #import "MUBackgroundView.h"
 
 @interface MUFavouriteServerListController () {
@@ -38,13 +39,15 @@
     [MUDatabase storeFavourites:_favouriteServers];
 }
 
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    // On iPad, we support all interface orientations.
+- (BOOL) shouldAutorotate {
+    return YES;
+}
+
+- (UIInterfaceOrientationMask) supportedInterfaceOrientations {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
+        return UIInterfaceOrientationMaskAll;
     }
-    
-    return toInterfaceOrientation == UIInterfaceOrientationPortrait;
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -84,7 +87,7 @@
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.text = NSLocalizedString(@"No Favourite Servers", nil);
         titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightSemibold];
-        titleLabel.textColor = [UIColor secondaryLabelColor];
+        titleLabel.textColor = [MUColor secondaryTextColor];
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [emptyView addSubview:titleLabel];
@@ -92,7 +95,7 @@
         UILabel *detailLabel = [[UILabel alloc] init];
         detailLabel.text = NSLocalizedString(@"Tap + to add a server, or browse public servers.\nServers you connect to are saved automatically.", nil);
         detailLabel.font = [UIFont systemFontOfSize:15];
-        detailLabel.textColor = [UIColor tertiaryLabelColor];
+        detailLabel.textColor = [MUColor tertiaryTextColor];
         detailLabel.textAlignment = NSTextAlignmentCenter;
         detailLabel.numberOfLines = 0;
         detailLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -136,6 +139,15 @@
     }
     [cell populateFromFavouriteServer:favServ];
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
+    
+    // Swipe hint accessory
+    if (@available(iOS 13.0, *)) {
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:14 weight:UIImageSymbolWeightRegular];
+        UIImageView *hintView = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"line.3.horizontal" withConfiguration:config]];
+        hintView.tintColor = [UIColor tertiaryLabelColor];
+        cell.accessoryView = hintView;
+    }
+    
     return (UITableViewCell *) cell;
 }
 
@@ -153,67 +165,20 @@
 #pragma mark Table view delegate
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Direct connect on tap
     MUFavouriteServer *favServ = [_favouriteServers objectAtIndex:[indexPath row]];
-    BOOL pad = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+    NSString *userName = [favServ userName];
+    if (userName == nil) {
+        userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"DefaultUserName"];
+    }
     
-    NSString *sheetTitle = pad ? nil : [favServ displayName];
-    
-    UIAlertController* sheetCtrl = [UIAlertController alertControllerWithTitle:sheetTitle
-                                                                       message:nil
-                                                                preferredStyle:UIAlertControllerStyleActionSheet];
-    
-    [sheetCtrl addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
-                                                   style:UIAlertActionStyleCancel
-                                                 handler:^(UIAlertAction * _Nonnull action) {
-        [[self tableView] deselectRowAtIndexPath:indexPath animated:YES];
-    }]];
-    
-    [sheetCtrl addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"Delete", nil)
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction * _Nonnull action) {
-        NSString *title = NSLocalizedString(@"Delete Favourite", nil);
-        NSString *msg = NSLocalizedString(@"Are you sure you want to delete this favourite server?", nil);
-        UIAlertController* alertCtrl = [UIAlertController alertControllerWithTitle:title
-                                                                           message:msg
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-        
-        [alertCtrl addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"No", nil)
-                                                       style:UIAlertActionStyleCancel
-                                                     handler:nil]];
-        [alertCtrl addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction * _Nonnull action) {
-            [self deleteFavouriteAtIndexPath:indexPath];
-        }]];
-
-        [self presentViewController:alertCtrl animated:YES completion:nil];
-        [[self tableView] deselectRowAtIndexPath:indexPath animated:YES];
-    }]];
-    [sheetCtrl addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"Edit", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction * _Nonnull action) {
-        [self presentEditDialogForFavourite:favServ];
-        [[self tableView] deselectRowAtIndexPath:indexPath animated:YES];
-    }]];
-    
-    [sheetCtrl addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"Connect", nil)
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction * _Nonnull action) {
-        NSString *userName = [favServ userName];
-        if (userName == nil) {
-            userName = [[NSUserDefaults standardUserDefaults] objectForKey:@"DefaultUserName"];
-        }
-        
-        MUConnectionController *connCtrlr = [MUConnectionController sharedController];
-        [connCtrlr connetToHostname:[favServ hostName]
-                               port:[favServ port]
-                            withUsername:userName
-                        andPassword:[favServ password]
-           withParentViewController:self];
-        [[self tableView] deselectRowAtIndexPath:indexPath animated:YES];
-    }]];
-    
-    [self presentViewController:sheetCtrl animated:YES completion:nil];
+    MUConnectionController *connCtrlr = [MUConnectionController sharedController];
+    [connCtrlr connetToHostname:[favServ hostName]
+                           port:[favServ port]
+                   withUsername:userName
+                    andPassword:[favServ password]
+       withParentViewController:self];
+    [[self tableView] deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void) deleteFavouriteAtIndexPath:(NSIndexPath *)indexPath {

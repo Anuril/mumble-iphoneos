@@ -16,5 +16,6 @@
 + (UIColor *) cellBackgroundColor;
 + (UIColor *) primaryTextColor;
 + (UIColor *) secondaryTextColor;
++ (UIColor *) tertiaryTextColor;
 + (UIColor *) tintColor;
 @end

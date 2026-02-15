@@ -185,13 +185,15 @@
     return [self initInEditMode:NO withContentOfFavouriteServer:nil];
 }
 
-- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    // On iPad, we support all interface orientations.
+- (BOOL) shouldAutorotate {
+    return YES;
+}
+
+- (UIInterfaceOrientationMask) supportedInterfaceOrientations {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
+        return UIInterfaceOrientationMaskAll;
     }
-    
-    return toInterfaceOrientation == UIInterfaceOrientationPortrait;
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 #pragma mark -
@@ -288,7 +290,10 @@
     // we're done.
     [[self navigationController] dismissViewControllerAnimated:YES completion:nil];
     if ([_target respondsToSelector:_doneAction]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         [_target performSelector:_doneAction withObject:self];
+#pragma clang diagnostic pop
     }
 }
 

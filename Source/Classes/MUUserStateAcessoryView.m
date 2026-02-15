@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 #import "MUUserStateAcessoryView.h"
+#import "MUColor.h"
 
 #import <MumbleKit/MKUser.h>
 
@@ -27,7 +28,7 @@
     else if ([user isLocalMuted])
         [iconViews addObject:[self _iconWithSFSymbol:@"mic.slash.fill" color:[UIColor systemOrangeColor] size:iconSize]];
     else if ([user isSuppressed])
-        [iconViews addObject:[self _iconWithSFSymbol:@"mic.slash" color:[UIColor secondaryLabelColor] size:iconSize]];
+        [iconViews addObject:[self _iconWithSFSymbol:@"mic.slash" color:[MUColor secondaryTextColor] size:iconSize]];
     if ([user isPrioritySpeaker])
         [iconViews addObject:[self _iconWithSFSymbol:@"exclamationmark.triangle.fill" color:[UIColor systemYellowColor] size:iconSize]];
     

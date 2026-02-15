@@ -102,6 +102,13 @@
     return [UIColor lightGrayColor];
 }
 
++ (UIColor *) tertiaryTextColor {
+    if (@available(iOS 13.0, *)) {
+        return [UIColor tertiaryLabelColor];
+    }
+    return [UIColor lightGrayColor];
+}
+
 + (UIColor *) tintColor {
     if (@available(iOS 13.0, *)) {
         return [UIColor systemBlueColor];

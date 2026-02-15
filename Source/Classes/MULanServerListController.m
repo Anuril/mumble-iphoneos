@@ -10,6 +10,7 @@
 #import "MUDatabase.h"
 #import "MUFavouriteServerListController.h"
 #import "MUConnectionController.h"
+#import "MUColor.h"
 #import "MUBackgroundView.h"
 
 static NSInteger NetServiceAlphabeticalSort(id arg1, id arg2, void *reverse) {
@@ -94,7 +95,7 @@ static NSInteger NetServiceAlphabeticalSort(id arg1, id arg2, void *reverse) {
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.text = NSLocalizedString(@"No Servers Found", nil);
         titleLabel.font = [UIFont systemFontOfSize:20 weight:UIFontWeightSemibold];
-        titleLabel.textColor = [UIColor secondaryLabelColor];
+        titleLabel.textColor = [MUColor secondaryTextColor];
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [emptyView addSubview:titleLabel];
@@ -102,7 +103,7 @@ static NSInteger NetServiceAlphabeticalSort(id arg1, id arg2, void *reverse) {
         UILabel *detailLabel = [[UILabel alloc] init];
         detailLabel.text = NSLocalizedString(@"Make sure a Mumble server is running on the same Wi-Fi network.", nil);
         detailLabel.font = [UIFont systemFontOfSize:15];
-        detailLabel.textColor = [UIColor tertiaryLabelColor];
+        detailLabel.textColor = [MUColor tertiaryTextColor];
         detailLabel.textAlignment = NSTextAlignmentCenter;
         detailLabel.numberOfLines = 0;
         detailLabel.translatesAutoresizingMaskIntoConstraints = NO;

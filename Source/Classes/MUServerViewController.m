@@ -253,7 +253,7 @@
     MKUser *connectedUser = [_serverModel connectedUser];
 
     cell.textLabel.font = [UIFont systemFontOfSize:16];
-    cell.textLabel.textColor = [UIColor labelColor];
+    cell.textLabel.textColor = [MUColor primaryTextColor];
     
     if ([object class] == [MKChannel class]) {
         MKChannel *chan = object;
@@ -562,48 +562,7 @@
 
 - (void) repositionTalkButton {
     // fixme(mkrautz): This should stay put if we're run on the iPhone.
-    return;
-    
-    UIDevice *device = [UIDevice currentDevice];
-    UIWindow *window = [[[UIApplication sharedApplication] windows] objectAtIndex:0];
-    CGRect windowRect = window.frame;
-    CGRect buttonRect;
-    CGSize buttonSize;
-    
-    UIImage *onImage = [UIImage imageNamed:@"talkbutton_on"];
-    buttonRect.size = onImage.size;
-    buttonRect.origin = CGPointMake(0, 0);
-    _talkButton.transform = CGAffineTransformIdentity;
-    buttonSize = onImage.size;
-    buttonRect.size = buttonSize;
-    
-    
-    UIDeviceOrientation orientation = device.orientation;
-    if (orientation == UIDeviceOrientationLandscapeLeft) {
-        _talkButton.transform = CGAffineTransformMakeRotation(M_PI_2);
-        buttonRect = _talkButton.frame;
-        buttonRect.origin.y = (windowRect.size.height - buttonSize.width)/2;
-        buttonRect.origin.x = 40;
-        _talkButton.frame = buttonRect;
-    } else if (orientation == UIDeviceOrientationLandscapeRight) {
-        _talkButton.transform = CGAffineTransformMakeRotation(-M_PI_2);
-        buttonRect = _talkButton.frame;
-        buttonRect.origin.y = (windowRect.size.height - buttonSize.width)/2;
-        buttonRect.origin.x = windowRect.size.width - (buttonSize.height + 40);
-        _talkButton.frame = buttonRect;
-    } else if (orientation == UIDeviceOrientationPortrait) {
-        _talkButton.transform = CGAffineTransformMakeRotation(0.0f);
-        buttonRect = _talkButton.frame;
-        buttonRect.origin.y = windowRect.size.height - (buttonSize.height + 40);
-        buttonRect.origin.x = (windowRect.size.width - buttonSize.width)/2;
-        _talkButton.frame = buttonRect;
-    } else if (orientation == UIDeviceOrientationPortraitUpsideDown) {
-        _talkButton.transform = CGAffineTransformMakeRotation(M_PI);
-        buttonRect = _talkButton.frame;
-        buttonRect.origin.y = 40;
-        buttonRect.origin.x = (windowRect.size.width - buttonSize.width)/2;
-        _talkButton.frame = buttonRect;
-    }
+    // Currently disabled — no-op.
 }
 
 - (void) talkOn:(UIButton *)button {

@@ -10,6 +10,8 @@
 #import "MUDatabase.h"
 #import "MUFavouriteServer.h"
 #import "MUHorizontalFlipTransitionDelegate.h"
+#import "MUApplicationDelegate.h"
+#import "MUServerPlaceholderViewController.h"
 
 #import <MumbleKit/MKConnection.h>
 #import <MumbleKit/MKServerModel.h>
@@ -81,8 +83,29 @@ NSString *MUConnectionClosedNotification = @"MUConnectionClosedNotification";
 }
 
 - (void) disconnectFromServer {
-    [_serverRoot dismissViewControllerAnimated:YES completion:nil];
     [self teardownConnection];
+    
+    // Reset the Server tab back to the placeholder
+    MUApplicationDelegate *appDelegate = (MUApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    UITabBarController *tabBar = [appDelegate tabBarController];
+    
+    MUServerPlaceholderViewController *placeholder = [[MUServerPlaceholderViewController alloc] init];
+    UINavigationController *serverNav = [[UINavigationController alloc] initWithRootViewController:placeholder];
+    serverNav.toolbarHidden = YES;
+    if (@available(iOS 13.0, *)) {
+        serverNav.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Server", nil)
+                                                            image:[UIImage systemImageNamed:@"server.rack"]
+                                                              tag:1];
+    } else {
+        serverNav.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Server", nil) image:nil tag:1];
+    }
+    
+    NSMutableArray *vcs = [tabBar.viewControllers mutableCopy];
+    [vcs replaceObjectAtIndex:1 withObject:serverNav];
+    tabBar.viewControllers = vcs;
+    
+    // Switch to Home tab
+    tabBar.selectedIndex = 0;
 }
 
 - (void) showConnectingView {
@@ -497,6 +520,9 @@ NSString *MUConnectionClosedNotification = @"MUConnectionClosedNotification";
 - (void) serverModel:(MKServerModel *)model joinedServerAsUser:(MKUser *)user {
     [MUDatabase storeUsername:[user userName] forServerWithHostname:[model hostname] port:[model port]];
 
+    // Record in connection history
+    [MUDatabase storeRecentConnectionWithHostname:[model hostname] port:[model port] username:[user userName]];
+
     // Auto-save to favourites if not already saved
     [self autoSaveToFavouritesWithHostname:[model hostname] port:[model port] username:[user userName]];
 
@@ -513,8 +539,24 @@ NSString *MUConnectionClosedNotification = @"MUConnectionClosedNotification";
         self->_hostname = nil;
         self->_password = nil;
         
-        self->_serverRoot.modalPresentationStyle = UIModalPresentationFullScreen;
-        [[self->_parentViewController navigationController] presentViewController:self->_serverRoot animated:YES completion:nil];
+        // Switch to Server tab with the connected server view
+        MUApplicationDelegate *appDelegate = (MUApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        UITabBarController *tabBar = [appDelegate tabBarController];
+        
+        // Preserve the tab bar item
+        if (@available(iOS 13.0, *)) {
+            self->_serverRoot.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Server", nil)
+                                                                        image:[UIImage systemImageNamed:@"server.rack"]
+                                                                          tag:1];
+        } else {
+            self->_serverRoot.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Server", nil) image:nil tag:1];
+        }
+        
+        NSMutableArray *vcs = [tabBar.viewControllers mutableCopy];
+        [vcs replaceObjectAtIndex:1 withObject:self->_serverRoot];
+        tabBar.viewControllers = vcs;
+        tabBar.selectedIndex = 1;
+        
         self->_parentViewController = nil;
     }];
 }

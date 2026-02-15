@@ -5,6 +5,7 @@
 #import "MUOnboardingViewController.h"
 #import "MUCertificateController.h"
 #import "MUCertificateCreationProgressView.h"
+#import "MUColor.h"
 
 #import <MumbleKit/MKCertificate.h>
 
@@ -25,7 +26,7 @@
     
     _currentPage = 0;
     _pagesBuilt = NO;
-    self.view.backgroundColor = [UIColor systemBackgroundColor];
+    self.view.backgroundColor = [MUColor backgroundColor];
     
     // Scroll view with Auto Layout
     _scrollView = [[UIScrollView alloc] init];
@@ -40,7 +41,7 @@
     _pageControl.numberOfPages = 3;
     _pageControl.currentPage = 0;
     _pageControl.currentPageIndicatorTintColor = [UIColor systemBlueColor];
-    _pageControl.pageIndicatorTintColor = [UIColor tertiaryLabelColor];
+    _pageControl.pageIndicatorTintColor = [MUColor tertiaryTextColor];
     _pageControl.translatesAutoresizingMaskIntoConstraints = NO;
     _pageControl.userInteractionEnabled = NO;
     [self.view addSubview:_pageControl];
@@ -135,7 +136,7 @@
     titleLabel.text = NSLocalizedString(@"Welcome to Mumble", nil);
     titleLabel.font = [UIFont systemFontOfSize:28 weight:UIFontWeightBold];
     titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textColor = [MUColor primaryTextColor];
     [page addSubview:titleLabel];
     y += 34 + 8;
     
@@ -144,7 +145,7 @@
     subtitleLabel.text = NSLocalizedString(@"Free, open-source, low-latency\nhigh-quality voice chat.", nil);
     subtitleLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightRegular];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    subtitleLabel.textColor = [UIColor secondaryLabelColor];
+    subtitleLabel.textColor = [MUColor secondaryTextColor];
     subtitleLabel.numberOfLines = 0;
     [subtitleLabel sizeToFit];
     CGRect sf = subtitleLabel.frame;
@@ -187,13 +188,13 @@
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(textX, y, textW, 20)];
     titleLabel.text = title;
     titleLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightSemibold];
-    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textColor = [MUColor primaryTextColor];
     [page addSubview:titleLabel];
     
     UILabel *detailLabel = [[UILabel alloc] initWithFrame:CGRectMake(textX, y + 22, textW, 0)];
     detailLabel.text = detail;
     detailLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightRegular];
-    detailLabel.textColor = [UIColor secondaryLabelColor];
+    detailLabel.textColor = [MUColor secondaryTextColor];
     detailLabel.numberOfLines = 0;
     [detailLabel sizeToFit];
     CGRect df = detailLabel.frame;
@@ -215,7 +216,7 @@
     titleLabel.text = NSLocalizedString(@"Set Up Your Identity", nil);
     titleLabel.font = [UIFont systemFontOfSize:28 weight:UIFontWeightBold];
     titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textColor = [MUColor primaryTextColor];
     [page addSubview:titleLabel];
     y += 34 + 8;
     
@@ -224,7 +225,7 @@
     subtitleLabel.text = NSLocalizedString(@"Choose a display name that others will see when you join a server.", nil);
     subtitleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    subtitleLabel.textColor = [UIColor secondaryLabelColor];
+    subtitleLabel.textColor = [MUColor secondaryTextColor];
     subtitleLabel.numberOfLines = 0;
     [subtitleLabel sizeToFit];
     CGRect sf = subtitleLabel.frame;
@@ -238,7 +239,7 @@
     UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(32, y, contentW, 18)];
     usernameLabel.text = NSLocalizedString(@"Display Name", nil);
     usernameLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightMedium];
-    usernameLabel.textColor = [UIColor secondaryLabelColor];
+    usernameLabel.textColor = [MUColor secondaryTextColor];
     [page addSubview:usernameLabel];
     y += 18 + 6;
     
@@ -248,7 +249,7 @@
     _usernameField.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"DefaultUserName"];
     _usernameField.font = [UIFont systemFontOfSize:17];
     _usernameField.borderStyle = UITextBorderStyleNone;
-    _usernameField.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
+    _usernameField.backgroundColor = [MUColor cellBackgroundColor];
     _usernameField.layer.cornerRadius = 12;
     _usernameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     _usernameField.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -266,7 +267,7 @@
     CGFloat cardW = contentW;
     
     UIView *certCard = [[UIView alloc] init];
-    certCard.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
+    certCard.backgroundColor = [MUColor cellBackgroundColor];
     certCard.layer.cornerRadius = 12;
     
     UIImageView *certIcon = [[UIImageView alloc] initWithFrame:CGRectMake(16, 16, 28, 28)];
@@ -283,13 +284,13 @@
     UILabel *certTitle = [[UILabel alloc] initWithFrame:CGRectMake(certTextX, 16, certTextW, 20)];
     certTitle.text = NSLocalizedString(@"Certificate", nil);
     certTitle.font = [UIFont systemFontOfSize:15 weight:UIFontWeightSemibold];
-    certTitle.textColor = [UIColor labelColor];
+    certTitle.textColor = [MUColor primaryTextColor];
     [certCard addSubview:certTitle];
     
     UILabel *certDetail = [[UILabel alloc] initWithFrame:CGRectMake(certTextX, 38, certTextW, 0)];
     certDetail.text = NSLocalizedString(@"A certificate will be created automatically. It\u2019s your identity \u2014 it lets servers remember you.", nil);
     certDetail.font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
-    certDetail.textColor = [UIColor secondaryLabelColor];
+    certDetail.textColor = [MUColor secondaryTextColor];
     certDetail.numberOfLines = 0;
     [certDetail sizeToFit];
     CGRect cdf = certDetail.frame;
@@ -313,7 +314,7 @@
     titleLabel.text = NSLocalizedString(@"Join a Server", nil);
     titleLabel.font = [UIFont systemFontOfSize:28 weight:UIFontWeightBold];
     titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textColor = [MUColor primaryTextColor];
     [page addSubview:titleLabel];
     y += 34 + 8;
     
@@ -322,7 +323,7 @@
     subtitleLabel.text = NSLocalizedString(@"There are several ways to find and connect to a Mumble server.", nil);
     subtitleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightRegular];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    subtitleLabel.textColor = [UIColor secondaryLabelColor];
+    subtitleLabel.textColor = [MUColor secondaryTextColor];
     subtitleLabel.numberOfLines = 0;
     [subtitleLabel sizeToFit];
     CGRect sf = subtitleLabel.frame;
@@ -352,7 +353,7 @@
     CGFloat cardW = w - margin * 2;
     
     UIView *card = [[UIView alloc] init];
-    card.backgroundColor = [UIColor secondarySystemGroupedBackgroundColor];
+    card.backgroundColor = [MUColor cellBackgroundColor];
     card.layer.cornerRadius = 12;
     
     CGFloat iconX = 16;
@@ -372,13 +373,13 @@
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(textX, 14, textW, 20)];
     titleLabel.text = title;
     titleLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightSemibold];
-    titleLabel.textColor = [UIColor labelColor];
+    titleLabel.textColor = [MUColor primaryTextColor];
     [card addSubview:titleLabel];
     
     UILabel *detailLabel = [[UILabel alloc] initWithFrame:CGRectMake(textX, 36, textW, 0)];
     detailLabel.text = detail;
     detailLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
-    detailLabel.textColor = [UIColor secondaryLabelColor];
+    detailLabel.textColor = [MUColor secondaryTextColor];
     detailLabel.numberOfLines = 0;
     [detailLabel sizeToFit];
     CGRect df = detailLabel.frame;
